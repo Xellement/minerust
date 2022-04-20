@@ -1,17 +1,24 @@
 #![allow(clippy::redundant_field_names)]
 #![allow(dead_code)]
-use bevy::{prelude::*, window::PresentMode, render::camera::ScalingMode};
+use bevy::{prelude::*, window::PresentMode};
 
 mod asset;
 mod tilemap;
+mod player;
+mod debug;
+mod game_camera;
 
 use asset::AssetPlugin;
 use tilemap::TilemapPlugin;
+use player::PlayerPlugin;
+use debug::DebugPlugin;
+use game_camera::GameCameraPlugin;
 
 pub const CLEAR: Color = Color::rgb(0.1, 0.1, 0.1);
 pub const RESOLUTION: f32 = 16.0 / 9.0;
-pub const TILE_SIZE: f32 = 8.0;
-pub const CAMERA_SIZE: f32 = TILE_SIZE * 4.0;
+pub const TILE_SIZE: f32 = 16.0;
+pub const CAMERA_SIZE: f32 = TILE_SIZE * 2.0;
+pub const PLAYER_BASE_SPEED : f32 = 4.0;
 
 fn main() {
     let height: f32 = 720.0;
@@ -25,18 +32,11 @@ fn main() {
             resizable: false,
             ..Default::default()
         })
-        .add_startup_system(spawn_camera)
         .add_plugins(DefaultPlugins)
         .add_plugin(AssetPlugin)
+        .add_plugin(TilemapPlugin)
+        .add_plugin(PlayerPlugin)
+        .add_plugin(DebugPlugin)
+        .add_plugin(GameCameraPlugin)
         .run();
-}
-
-fn spawn_camera(mut commands: Commands) {
-    let mut camera = OrthographicCameraBundle::new_2d();
-    camera.orthographic_projection.scaling_mode = ScalingMode::None;
-    camera.orthographic_projection.top = CAMERA_SIZE;
-    camera.orthographic_projection.bottom = -CAMERA_SIZE;
-    camera.orthographic_projection.right = CAMERA_SIZE * RESOLUTION;
-    camera.orthographic_projection.left = -CAMERA_SIZE * RESOLUTION;
-    commands.spawn_bundle(camera);
-}
+    }
