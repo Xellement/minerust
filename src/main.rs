@@ -34,9 +34,10 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(AssetPlugin)
-        .add_plugin(TilemapPlugin)
         .add_plugin(PlayerPlugin)
+        .add_plugin(TilemapPlugin)
         .add_plugin(DebugPlugin)
         .add_plugin(GameCameraPlugin)
+        
         .run();
     }

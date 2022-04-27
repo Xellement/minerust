@@ -1,22 +1,27 @@
 TilesDesc(
     map : {
         VOID: SRect (
+            collision: true,
             min: (0, 0),
             max: (15, 15),
         ),
         GRASS: SRect(
+            collision: false,
             min: (16, 0),
             max: (31, 15),
         ),
         DIRT: SRect(
+            collision: false,
             min: (32, 0),
             max: (47, 15),
         ),
         ROCK: SRect(
+            collision: false,
             min: (48, 0),
             max: (63, 15),
         ),
         SAND: SRect(
+            collision: false,
             min: (64, 0),
             max: (79, 15),
         )

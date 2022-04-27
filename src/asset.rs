@@ -20,13 +20,14 @@ impl Plugin for AssetPlugin {
 
 #[derive(Default, Clone, Copy, Debug, Reflect, Deserialize)]
 struct SRect {
+    pub collision: bool,
     pub min: (u16, u16),
     pub max: (u16, u16),
 }
 
 pub struct TileAssets {
     pub texture_atlas: Handle<TextureAtlas>,
-    pub tiles_map: HashMap<TilesType, usize>
+    pub tiles_map: HashMap<TilesType, (usize, bool)>
 }
 
 pub struct PlayerAsset {
@@ -71,14 +72,14 @@ fn load_tiles_assets(
         println!("Failed to load config: {}", e);
         std::process::exit(1);
     });
-    let mut tiles_map: HashMap<TilesType, usize> = HashMap::default();
+    let mut tiles_map: HashMap<TilesType, (usize, bool)> = HashMap::default();
     for (tile_type, rect) in tiles_desc.map.iter() {
         println!("[ASSET] Found graphic {:?}", tile_type);
         let index = atlas.add_texture(Rect {
             min: Vec2::new(rect.min.0.into(), rect.min.1.into()),
             max: Vec2::new(rect.max.0.into(), rect.max.1.into()),
         });
-        tiles_map.insert(*tile_type, index);
+        tiles_map.insert(*tile_type, (index, rect.collision));
     }
 
     let atlas_handle = texture_atlases.add(atlas);
@@ -94,11 +95,11 @@ fn load_player_asset(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>
 ) {
     let image_handle = assets.load("player.png");
-    let mut atlas = TextureAtlas::new_empty(image_handle, Vec2::splat(32.));
+    let mut atlas = TextureAtlas::new_empty(image_handle, Vec2::new( 16., 26.));
 
     let player = atlas.add_texture(Rect {
         min: Vec2::new( 0., 0.),
-        max: Vec2::new( 31., 31.)
+        max: Vec2::new( 15., 25.)
     });
 
     let atlas_handle = texture_atlases.add(atlas);

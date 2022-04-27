@@ -26,8 +26,17 @@ impl Plugin for TilemapPlugin {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Inspectable)]
 struct Map;
+
+#[derive(Component)]
+pub struct TileCollider;
+
+#[derive(Debug)]
+pub struct PlayerSpawn {
+    pub x: u8,
+    pub y: u8
+}
 
 #[derive(Deserialize)]
 struct Row {
@@ -38,10 +47,12 @@ struct Row {
 #[derive(Deserialize)]
 struct Level {
     desc_tiles: HashMap<u8, TilesType>,
+    spawn_player: (u8, u8),
     tiles_grid: Vec<Row>
 }
 
 fn create_map(mut commands: Commands, assets: Res<TileAssets>) {
+    println!("Create Map");
     let mut tiles = Vec::new();
     let map_desc = fs::read_to_string("assets/map.ron").unwrap();
     let level: Level = from_str(&map_desc).unwrap_or_else(|e| {
@@ -59,14 +70,24 @@ fn create_map(mut commands: Commands, assets: Res<TileAssets>) {
                 .get(tile)
                 .expect(&format!("No index tile for object {:?}", tile));
 
-            let index: &usize = assets
+            let tile_data = assets
                 .tiles_map
                 .get(&tile_type)
                 .expect(&format!("No graphic for object {:?}", &tile_type));
-            let ent = spawn_sprite(&mut commands, &assets.texture_atlas, *index, translation);
-            tiles.push(ent);
+
+            let tile = spawn_sprite(&mut commands, &assets.texture_atlas, (*tile_data).0, translation);
+            if (*tile_data).1 {
+                commands.entity(tile).insert(TileCollider);
+            }
+            tiles.push(tile);
         }
     }
+
+    commands
+        .insert_resource(PlayerSpawn {
+            x: level.spawn_player.0,
+            y: level.spawn_player.1
+        });
 
     commands
         .spawn()

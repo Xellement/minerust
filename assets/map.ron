@@ -5,6 +5,7 @@ Level (
         2: SAND,
         3: DIRT
     },
+    spawn_player: (6, 2),
     tiles_grid: [
         Row ( i:  5, tiles: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] ),
         Row ( i:  4, tiles: [0, 2, 2, 1, 1, 1, 1, 1, 1, 1, 0] ),
